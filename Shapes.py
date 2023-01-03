@@ -1,11 +1,18 @@
 class TerrainTile:
-    def __init__(self, x: int, y: int, width: int, height: int, surface: str, plate_index: int = None):
+    def __init__(self, x: int, y: int, width: int, height: int, surface: str, color, plate_index: int = None):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.plate_index = plate_index
         self.surface = surface
+        self.color = color
+        self.highlight = False
+
+    def __copy__(self):
+        tile = TerrainTile(self.x, self.y, self.width, self.height, self.surface, self.color, self.plate_index)
+        tile.highlight = self.highlight
+        return tile
 
     def __str__(self):
         return f"TerrainTile at ({self.x}, {self.y}) terrain of type {self.surface}"
@@ -56,8 +63,8 @@ class QuadTree:
         if self.nodes is None:
             x = self.bounds.x
             y = self.bounds.y
-            width = self.bounds.width
-            height = self.bounds.height
+            width = self.bounds.WIDTH
+            height = self.bounds.HEIGHT
 
             half_width = width // 2
             half_height = height // 2
@@ -117,14 +124,14 @@ class QuadTree:
 
     def get_index(self, rectangle):
         is_inside_bounds = rectangle.x > self.bounds.x and rectangle.y > self.bounds.y and \
-                           rectangle.x + rectangle.width < self.bounds.x + self.bounds.width and \
-                           rectangle.y + rectangle.height < self.bounds.y + self.bounds.height
+                           rectangle.x + rectangle.WIDTH < self.bounds.x + self.bounds.WIDTH and \
+                           rectangle.y + rectangle.HEIGHT < self.bounds.y + self.bounds.HEIGHT
         if not is_inside_bounds:
             return -1
-        is_top_quadrant = (rectangle.y + rectangle.height) < self.bounds.y + self.bounds.height / 2
-        is_bottom_quadrant = rectangle.y > self.bounds.y + self.bounds.height / 2
-        is_left_quadrant = (rectangle.x + rectangle.width) < self.bounds.x + self.bounds.width / 2
-        is_right_quadrant = rectangle.x > self.bounds.x + self.bounds.width / 2
+        is_top_quadrant = (rectangle.y + rectangle.HEIGHT) < self.bounds.y + self.bounds.HEIGHT / 2
+        is_bottom_quadrant = rectangle.y > self.bounds.y + self.bounds.HEIGHT / 2
+        is_left_quadrant = (rectangle.x + rectangle.WIDTH) < self.bounds.x + self.bounds.WIDTH / 2
+        is_right_quadrant = rectangle.x > self.bounds.x + self.bounds.WIDTH / 2
 
         if is_left_quadrant and is_top_quadrant:
             # top left
@@ -161,9 +168,9 @@ class QuadTree:
     @staticmethod
     def rectangles_overlap(rect1, rect2):
         # Check if the x-coordinates of the rectangles overlap
-        x_overlap = rect1.x <= rect2.x + rect2.width and rect2.x <= rect1.x + rect1.width
+        x_overlap = rect1.x <= rect2.x + rect2.WIDTH and rect2.x <= rect1.x + rect1.WIDTH
         # Check if the y-coordinates of the rectangles overlap
-        y_overlap = rect1.y <= rect2.y + rect2.height and rect2.y <= rect1.y + rect1.height
+        y_overlap = rect1.y <= rect2.y + rect2.HEIGHT and rect2.y <= rect1.y + rect1.HEIGHT
         # Return true if both x and y overlap, false otherwise
         return x_overlap and y_overlap
 
