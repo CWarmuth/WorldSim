@@ -1,3 +1,6 @@
+from random import randint
+
+
 class TerrainTile:
     def __init__(self, x: int, y: int, width: int, height: int, surface: str, color, plate_index: int = None):
         self.x = x
@@ -15,7 +18,23 @@ class TerrainTile:
         return tile
 
     def __str__(self):
-        return f"TerrainTile at ({self.x}, {self.y}) terrain of type {self.surface}"
+        return f"{self.highlight} for HL, TerrainTile at ({self.x}, {self.y}) terrain of type {self.surface}"
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    def change_surface(self, surface, color=None):
+        self.surface = surface
+        if color is not None:
+            self.color = color
+
+        match surface:
+            case "WATER":
+                self.color = (0, 0, randint(200, 255), 255)
+            case "GRASS":
+                self.color = (0, randint(200, 255), 0, 255)
+            case _:
+                raise ValueError(f"Invalid surface {surface}")
 
 
 class Rectangle:
